@@ -1,5 +1,5 @@
 
-class SpatialShip {
+class SpaceShip {
     color = color(255, 255, 255)
     speed = 5
     sprite: any = undefined

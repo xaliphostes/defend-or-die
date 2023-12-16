@@ -4,7 +4,7 @@ var Asteroid = (function () {
         this.hit = false;
         this.w = 25;
         this.h = 14;
-        this.speed = 5;
+        this.speed = 3;
         var image = loadImage('images/mutant.png');
         this.sprite = createSprite(300, 150);
         this.sprite.addImage(image);
@@ -52,8 +52,27 @@ var BankOfSounds = (function () {
     }
     return BankOfSounds;
 }());
+var Pt = (function () {
+    function Pt(x, y, c) {
+        this.x = x;
+        this.y = y;
+        this.c = c;
+        this.speed = 2;
+    }
+    Pt.prototype.draw = function () {
+        this.x += this.speed;
+        if (this.x > width)
+            this.x = 0;
+        stroke(this.c);
+        strokeWeight(2);
+        point(this.x, this.y);
+    };
+    return Pt;
+}());
 var Game = (function () {
     function Game(n) {
+        var _this = this;
+        this.points = [];
         this.asteroids = [];
         this.ship = undefined;
         this.theEnd = false;
@@ -61,7 +80,22 @@ var Game = (function () {
             var r = new Asteroid(random(width), random(height));
             this.asteroids.push(r);
         }
-        this.ship = new SpatialShip(this);
+        for (var i = 0; i < 1000; i++) {
+            this.points.push(new Pt(random(width), random(height), color(random(0, 255), random(0, 255), random(0, 255))));
+        }
+        this.ship = new SpaceShip(this);
+        var button = createButton('Start over');
+        button.position(width + 100, 120);
+        button.mousePressed(function () {
+            _this.asteroids.forEach(function (a) { return a.sprite.removed = true; });
+            var n = _this.asteroids.length;
+            _this.asteroids = [];
+            for (var i = 0; i < n; i++) {
+                var r = new Asteroid(random(width), random(height));
+                _this.asteroids.push(r);
+            }
+            _this.theEnd = false;
+        });
     }
     Game.prototype.draw = function () {
         var _this = this;
@@ -72,8 +106,8 @@ var Game = (function () {
         else {
             textSize(50);
             fill(255);
-            text('The end!', width / 2 - 100, height / 2);
         }
+        this.points.forEach(function (p) { return p.draw(); });
         this.asteroids.forEach(function (asteroid) {
             asteroid.display();
             var collide = false;
@@ -95,14 +129,12 @@ var Game = (function () {
         text("Score: ".concat(this.asteroids.reduce(function (prev, cur) { return prev + (cur.hit ? 1 : 0); }, 0), "/").concat(this.asteroids.length), 10, 30);
     };
     Game.prototype.endOfGame = function () {
-        this.theEnd = true;
-        this.asteroids.forEach(function (a) {
-            a.speed = 0;
-        });
         bankOfSounds.explode.play();
         setTimeout(function () {
             bankOfSounds.explode.stop();
         }, 2000);
+        alert("End of game");
+        this.endAll();
     };
     Game.prototype.countAndDisplay = function () {
         var n = this.asteroids.reduce(function (prev, cur) { return prev + (cur.hit ? 1 : 0); }, 0);
@@ -111,12 +143,22 @@ var Game = (function () {
             fill(255);
             text('You win!', width / 2, height / 2);
             bankOfSounds.final.play();
+            this.endAll();
         }
+    };
+    Game.prototype.endAll = function () {
+        this.theEnd = true;
+        this.asteroids.forEach(function (a) {
+            a.speed = 0;
+        });
+        this.points.forEach(function (a) {
+            a.speed = 0;
+        });
     };
     return Game;
 }());
-var SpatialShip = (function () {
-    function SpatialShip(game) {
+var SpaceShip = (function () {
+    function SpaceShip(game) {
         this.game = game;
         this.color = color(255, 255, 255);
         this.speed = 5;
@@ -130,35 +172,35 @@ var SpatialShip = (function () {
         this.sprite.y = height / 2;
         this.sprite.collider = 'none';
     }
-    Object.defineProperty(SpatialShip.prototype, "width", {
+    Object.defineProperty(SpaceShip.prototype, "width", {
         get: function () {
             return this.sprite.width;
         },
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(SpatialShip.prototype, "height", {
+    Object.defineProperty(SpaceShip.prototype, "height", {
         get: function () {
             return this.sprite.height;
         },
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(SpatialShip.prototype, "x", {
+    Object.defineProperty(SpaceShip.prototype, "x", {
         get: function () {
             return this.sprite.position.x;
         },
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(SpatialShip.prototype, "y", {
+    Object.defineProperty(SpaceShip.prototype, "y", {
         get: function () {
             return this.sprite.position.y;
         },
         enumerable: false,
         configurable: true
     });
-    SpatialShip.prototype.getRect = function () {
+    SpaceShip.prototype.getRect = function () {
         return {
             x: this.sprite.position.x - this.w / 2,
             y: this.sprite.position.y - this.h,
@@ -166,7 +208,7 @@ var SpatialShip = (function () {
             height: this.h
         };
     };
-    SpatialShip.prototype.translate = function (x, y) {
+    SpaceShip.prototype.translate = function (x, y) {
         this.sprite.position.x += x;
         this.sprite.position.y += y;
         if (this.sprite.position.x > width)
@@ -178,7 +220,7 @@ var SpatialShip = (function () {
         if (this.sprite.position.y < 0)
             this.sprite.position.y = 0;
     };
-    SpatialShip.prototype.keyPressed = function () {
+    SpaceShip.prototype.keyPressed = function () {
         if (keyIsPressed) {
             if (keyCode === DOWN_ARROW) {
                 this.translate(0, this.speed);
@@ -205,7 +247,7 @@ var SpatialShip = (function () {
             }
         }
     };
-    SpatialShip.prototype.hit = function (start, elevation) {
+    SpaceShip.prototype.hit = function (start, elevation) {
         this.game.asteroids.forEach(function (a) {
             var r = a.getRect();
             if (intersectLineRect(r, start, elevation)) {
@@ -214,7 +256,7 @@ var SpatialShip = (function () {
             }
         });
     };
-    return SpatialShip;
+    return SpaceShip;
 }());
 var game = undefined;
 var bankOfSounds = undefined;

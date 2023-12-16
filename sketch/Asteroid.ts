@@ -10,7 +10,7 @@ class Asteroid {
     hit = false
     w = 25
     h = 14
-    speed = 5
+    speed = 3
 
     constructor(x: number, y: number) {
         const image = loadImage('images/mutant.png')
@@ -39,7 +39,7 @@ class Asteroid {
         }
     }
 
-    collision(s: SpatialShip): boolean {
+    collision(s: SpaceShip): boolean {
         const sr = s.getRect()
         const sa = this.getRect()
         if (intersectionRectRect(sr, sa)) {
