@@ -1,33 +1,18 @@
-class Pt {
-    speed = 2
-    constructor(public x: number, private y: number, private c: p5.Color) {
-    }
-
-    draw() {
-        this.x += this.speed
-        if (this.x > width) this.x = 0
-        stroke(this.c)
-        strokeWeight(2)
-        point(this.x, this.y)
-    }
-}
-
 class Game {
-    points: Pt[] = []
+    stars: Stars = undefined
     asteroids: Asteroid[] = []
     ship: SpaceShip = undefined
+
     theEnd = false
+    speed = 3
 
     constructor(n: number) {
         for (let i = 0; i < n; i++) {
-            const r = new Asteroid(random(width), random(height))
+            const r = new Asteroid(random(width), random(height), this.speed)
             this.asteroids.push(r)
         }
 
-        for (let i = 0; i < 1000; i++) {
-            this.points.push(new Pt(random(width), random(height), color(random(0, 255), random(0, 255), random(0, 255))))
-        }
-
+        this.stars = new Stars()
         this.ship = new SpaceShip(this)
 
         let button = createButton('Start over')
@@ -37,13 +22,15 @@ class Game {
             const n = this.asteroids.length
             this.asteroids = []
             for (let i = 0; i < n; i++) {
-                const r = new Asteroid(random(width), random(height))
+                const r = new Asteroid(random(width), random(height), this.speed)
                 this.asteroids.push(r)
             }
             this.theEnd = false
         })
     }
 
+    // This routine is called many times each second
+    //
     draw() {
         background(0)
 
@@ -56,7 +43,7 @@ class Game {
             // text('The end!', width / 2 - 100, height / 2)
         }
 
-        this.points.forEach(p => p.draw())
+        this.stars.draw()
 
         this.asteroids.forEach(asteroid => {
             asteroid.display()
@@ -98,9 +85,12 @@ class Game {
             textSize(50)
             fill(255)
             text('You win!', width / 2, height / 2)
-            bankOfSounds.final.play()
 
-            this.endAll()
+            if (this.theEnd === false) {
+                bankOfSounds.final.play()
+                this.endAll()
+                this.speed += 1
+            }
         }
     }
 
@@ -111,8 +101,6 @@ class Game {
             a.speed = 0
         })
 
-        this.points.forEach(a => {
-            a.speed = 0
-        })
+        this.stars.setSpeed(0)
     }
 }

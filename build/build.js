@@ -1,10 +1,11 @@
 var Asteroid = (function () {
-    function Asteroid(x, y) {
+    function Asteroid(x, y, speed) {
         this.sprite = undefined;
         this.hit = false;
         this.w = 25;
         this.h = 14;
         this.speed = 3;
+        this.speed = speed;
         var image = loadImage('images/mutant.png');
         this.sprite = createSprite(300, 150);
         this.sprite.addImage(image);
@@ -52,37 +53,19 @@ var BankOfSounds = (function () {
     }
     return BankOfSounds;
 }());
-var Pt = (function () {
-    function Pt(x, y, c) {
-        this.x = x;
-        this.y = y;
-        this.c = c;
-        this.speed = 2;
-    }
-    Pt.prototype.draw = function () {
-        this.x += this.speed;
-        if (this.x > width)
-            this.x = 0;
-        stroke(this.c);
-        strokeWeight(2);
-        point(this.x, this.y);
-    };
-    return Pt;
-}());
 var Game = (function () {
     function Game(n) {
         var _this = this;
-        this.points = [];
+        this.stars = undefined;
         this.asteroids = [];
         this.ship = undefined;
         this.theEnd = false;
+        this.speed = 3;
         for (var i = 0; i < n; i++) {
-            var r = new Asteroid(random(width), random(height));
+            var r = new Asteroid(random(width), random(height), this.speed);
             this.asteroids.push(r);
         }
-        for (var i = 0; i < 1000; i++) {
-            this.points.push(new Pt(random(width), random(height), color(random(0, 255), random(0, 255), random(0, 255))));
-        }
+        this.stars = new Stars();
         this.ship = new SpaceShip(this);
         var button = createButton('Start over');
         button.position(width + 100, 120);
@@ -91,7 +74,7 @@ var Game = (function () {
             var n = _this.asteroids.length;
             _this.asteroids = [];
             for (var i = 0; i < n; i++) {
-                var r = new Asteroid(random(width), random(height));
+                var r = new Asteroid(random(width), random(height), _this.speed);
                 _this.asteroids.push(r);
             }
             _this.theEnd = false;
@@ -107,7 +90,7 @@ var Game = (function () {
             textSize(50);
             fill(255);
         }
-        this.points.forEach(function (p) { return p.draw(); });
+        this.stars.draw();
         this.asteroids.forEach(function (asteroid) {
             asteroid.display();
             var collide = false;
@@ -142,8 +125,11 @@ var Game = (function () {
             textSize(50);
             fill(255);
             text('You win!', width / 2, height / 2);
-            bankOfSounds.final.play();
-            this.endAll();
+            if (this.theEnd === false) {
+                bankOfSounds.final.play();
+                this.endAll();
+                this.speed += 1;
+            }
         }
     };
     Game.prototype.endAll = function () {
@@ -151,9 +137,7 @@ var Game = (function () {
         this.asteroids.forEach(function (a) {
             a.speed = 0;
         });
-        this.points.forEach(function (a) {
-            a.speed = 0;
-        });
+        this.stars.setSpeed(0);
     };
     return Game;
 }());
@@ -249,14 +233,48 @@ var SpaceShip = (function () {
     };
     SpaceShip.prototype.hit = function (start, elevation) {
         this.game.asteroids.forEach(function (a) {
-            var r = a.getRect();
-            if (intersectLineRect(r, start, elevation)) {
-                a.hit = true;
-                a.sprite.removed = true;
+            if (a.hit === false) {
+                var r = a.getRect();
+                if (intersectLineRect(r, start, elevation)) {
+                    a.hit = true;
+                    a.sprite.removed = true;
+                }
             }
         });
     };
     return SpaceShip;
+}());
+var Star = (function () {
+    function Star(x, y, c) {
+        this.x = x;
+        this.y = y;
+        this.c = c;
+        this.speed = 2;
+    }
+    Star.prototype.draw = function () {
+        this.x += this.speed;
+        if (this.x > width)
+            this.x = 0;
+        stroke(this.c);
+        strokeWeight(2);
+        point(this.x, this.y);
+    };
+    return Star;
+}());
+var Stars = (function () {
+    function Stars() {
+        this.points = [];
+        for (var i = 0; i < 1000; i++) {
+            this.points.push(new Star(random(width), random(height), color(random(0, 255), random(0, 255), random(0, 255))));
+        }
+    }
+    Stars.prototype.draw = function () {
+        this.points.forEach(function (p) { return p.draw(); });
+    };
+    Stars.prototype.setSpeed = function (v) {
+        this.points.forEach(function (p) { return p.speed = v; });
+    };
+    return Stars;
 }());
 var game = undefined;
 var bankOfSounds = undefined;

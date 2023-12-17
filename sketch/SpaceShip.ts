@@ -87,10 +87,12 @@ class SpaceShip {
 
     hit(start: number, elevation: number) {
         this.game.asteroids.forEach(a => {
-            const r = a.getRect()
-            if (intersectLineRect(r, start, elevation)) {
-                a.hit = true
-                a.sprite.removed = true
+            if (a.hit === false) {
+                const r = a.getRect()
+                if (intersectLineRect(r, start, elevation)) {
+                    a.hit = true
+                    a.sprite.removed = true
+                }
             }
         })
     }

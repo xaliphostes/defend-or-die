@@ -12,7 +12,8 @@ class Asteroid {
     h = 14
     speed = 3
 
-    constructor(x: number, y: number) {
+    constructor(x: number, y: number, speed: number) {
+        this.speed = speed
         const image = loadImage('images/mutant.png')
         this.sprite = createSprite(300, 150)
         this.sprite.addImage(image)
