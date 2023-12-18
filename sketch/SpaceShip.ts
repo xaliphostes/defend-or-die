@@ -45,11 +45,19 @@ class SpaceShip {
         this.sprite.position.y += y
 
         // Check que l'on ne depasse pas en x...
-        if (this.sprite.position.x > width) this.sprite.position.x = width
-        if (this.sprite.position.x < 0) this.sprite.position.x = 0
+        if (this.sprite.position.x > width) {
+            this.sprite.position.x = width
+        }
+        if (this.sprite.position.x < 0) {
+            this.sprite.position.x = 0
+        }
         // Check que l'on ne depasse pas en y...
-        if (this.sprite.position.y > height) this.sprite.position.y = height
-        if (this.sprite.position.y < 0) this.sprite.position.y = 0
+        if (this.sprite.position.y > height) {
+            this.sprite.position.y = height
+        }
+        if (this.sprite.position.y < 0) {
+            this.sprite.position.y = 0
+        }
     }
 
     keyPressed() {

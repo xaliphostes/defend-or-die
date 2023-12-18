@@ -2,6 +2,7 @@ class Game {
     stars: Stars = undefined
     asteroids: Asteroid[] = []
     ship: SpaceShip = undefined
+    help: any = undefined
 
     theEnd = false
     speed = 3
@@ -16,7 +17,7 @@ class Game {
         this.ship = new SpaceShip(this)
 
         let button = createButton('Start over')
-        button.position(width + 100, 120)
+        button.position(width + 45, 40)
         button.mousePressed(() => {
             this.asteroids.forEach(a => a.sprite.removed = true)
             const n = this.asteroids.length
@@ -25,8 +26,14 @@ class Game {
                 const r = new Asteroid(random(width), random(height), this.speed)
                 this.asteroids.push(r)
             }
+
+            this.stars.setSpeed(this.speed - 1)
+
             this.theEnd = false
         })
+
+        this.generateHelp()
+
     }
 
     // This routine is called many times each second
@@ -60,6 +67,8 @@ class Game {
 
         this.countAndDisplay() // Check if we won
         this.score()
+
+        // this.help()
     }
 
     private score() {
@@ -90,6 +99,7 @@ class Game {
                 bankOfSounds.final.play()
                 this.endAll()
                 this.speed += 1
+                this.stars.increaseSpeed()
             }
         }
     }
@@ -102,5 +112,54 @@ class Game {
         })
 
         this.stars.setSpeed(0)
+    }
+
+    generateHelp() {
+        // this.help = createP(`
+        // <h4>Help</h4> <br/>
+        // <span>→: right <br/>
+        // <span>←: left <br/>
+        // <span>↓: down <br/>
+        // <span>↑: up <br/>
+        // <span>Space: fire <br/>
+        // <span>A: Go to hyper-space <br/>`)
+        // this.help.position(30, height + 45)
+
+        this.help = createP(`
+    <table>
+    <thead>
+        <tr>
+            <th>Key</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>→</td>
+            <td>Go right</td>
+        </tr>
+        <tr>
+            <td>←</td>
+            <td>Go left</td>
+        </tr>
+        <tr>
+            <td>↓</td>
+            <td>Go down</td>
+        </tr>
+        <tr>
+            <td>↑</td>
+            <td>Go up</td>
+        </tr>
+        <tr>
+            <td>Space</td>
+            <td>Fire</td>
+        </tr>
+        <tr>
+            <td>A</td>
+            <td>Go to hyper space</td>
+        </tr>
+    </tbody>
+    </table>`)
+    this.help.position(30, height + 45)
     }
 }

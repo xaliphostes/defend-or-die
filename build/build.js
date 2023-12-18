@@ -59,6 +59,7 @@ var Game = (function () {
         this.stars = undefined;
         this.asteroids = [];
         this.ship = undefined;
+        this.help = undefined;
         this.theEnd = false;
         this.speed = 3;
         for (var i = 0; i < n; i++) {
@@ -68,7 +69,7 @@ var Game = (function () {
         this.stars = new Stars();
         this.ship = new SpaceShip(this);
         var button = createButton('Start over');
-        button.position(width + 100, 120);
+        button.position(width + 45, 40);
         button.mousePressed(function () {
             _this.asteroids.forEach(function (a) { return a.sprite.removed = true; });
             var n = _this.asteroids.length;
@@ -77,8 +78,10 @@ var Game = (function () {
                 var r = new Asteroid(random(width), random(height), _this.speed);
                 _this.asteroids.push(r);
             }
+            _this.stars.setSpeed(_this.speed - 1);
             _this.theEnd = false;
         });
+        this.generateHelp();
     }
     Game.prototype.draw = function () {
         var _this = this;
@@ -129,6 +132,7 @@ var Game = (function () {
                 bankOfSounds.final.play();
                 this.endAll();
                 this.speed += 1;
+                this.stars.increaseSpeed();
             }
         }
     };
@@ -138,6 +142,10 @@ var Game = (function () {
             a.speed = 0;
         });
         this.stars.setSpeed(0);
+    };
+    Game.prototype.generateHelp = function () {
+        this.help = createP("\n    <table>\n    <thead>\n        <tr>\n            <th>Key</th>\n            <th>Action</th>\n        </tr>\n    </thead>\n    <tbody>\n        <tr>\n            <td>\u2192</td>\n            <td>Go right</td>\n        </tr>\n        <tr>\n            <td>\u2190</td>\n            <td>Go left</td>\n        </tr>\n        <tr>\n            <td>\u2193</td>\n            <td>Go down</td>\n        </tr>\n        <tr>\n            <td>\u2191</td>\n            <td>Go up</td>\n        </tr>\n        <tr>\n            <td>Space</td>\n            <td>Fire</td>\n        </tr>\n        <tr>\n            <td>A</td>\n            <td>Go to hyper space</td>\n        </tr>\n    </tbody>\n    </table>");
+        this.help.position(30, height + 45);
     };
     return Game;
 }());
@@ -195,14 +203,18 @@ var SpaceShip = (function () {
     SpaceShip.prototype.translate = function (x, y) {
         this.sprite.position.x += x;
         this.sprite.position.y += y;
-        if (this.sprite.position.x > width)
+        if (this.sprite.position.x > width) {
             this.sprite.position.x = width;
-        if (this.sprite.position.x < 0)
+        }
+        if (this.sprite.position.x < 0) {
             this.sprite.position.x = 0;
-        if (this.sprite.position.y > height)
+        }
+        if (this.sprite.position.y > height) {
             this.sprite.position.y = height;
-        if (this.sprite.position.y < 0)
+        }
+        if (this.sprite.position.y < 0) {
             this.sprite.position.y = 0;
+        }
     };
     SpaceShip.prototype.keyPressed = function () {
         if (keyIsPressed) {
@@ -273,6 +285,9 @@ var Stars = (function () {
     };
     Stars.prototype.setSpeed = function (v) {
         this.points.forEach(function (p) { return p.speed = v; });
+    };
+    Stars.prototype.increaseSpeed = function () {
+        this.points.forEach(function (p) { return p.speed++; });
     };
     return Stars;
 }());

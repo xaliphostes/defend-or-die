@@ -29,4 +29,8 @@ class Stars {
     setSpeed(v: number) {
         this.points.forEach(p => p.speed = v)
     }
+
+    increaseSpeed() {
+        this.points.forEach(p => p.speed++ )
+    }
 }
