@@ -6,19 +6,26 @@ Written using [p5.js](https://p5js.org/)
     <a href="https://xaliphostes.github.io/defend-or-die/"><b>Launch the game...</b></a>
 </p>
 
-# Notions for the courses
+# Notions for this course
 - Variables in TypeScript
-- Classes with constructor, private, public and protected methods
-- type keyword
+- Classes with constructor, private, public and protected methods, encapsulation...
+- `type` keyword
 - Loop
 - Container (array)
-- Third party library: p5.js
+- Third party library: [p5.js](https://p5js.org/)
 - Global variables
 - Functions
-- Math (rect/rect and rect/line intersection, notion of vector)
 
-With also an overview of
+## with also an overview of
 - node.js
+- packages under node.js
 - git
 - github
-- packages used with node.js
+- html
+- css
+
+## and of course, with some essential knowledge in
+- Math (rect/rect and rect/line intersection, notion of vector, ...)
+- English writting
+- Code documentation
+- Code testing

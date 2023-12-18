@@ -115,16 +115,6 @@ class Game {
     }
 
     generateHelp() {
-        // this.help = createP(`
-        // <h4>Help</h4> <br/>
-        // <span>→: right <br/>
-        // <span>←: left <br/>
-        // <span>↓: down <br/>
-        // <span>↑: up <br/>
-        // <span>Space: fire <br/>
-        // <span>A: Go to hyper-space <br/>`)
-        // this.help.position(30, height + 45)
-
         this.help = createP(`
     <table>
     <thead>
